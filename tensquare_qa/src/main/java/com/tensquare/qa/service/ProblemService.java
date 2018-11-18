@@ -5,6 +5,7 @@ import com.tensquare.qa.pojo.Problem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import util.IdWorker;
@@ -30,6 +31,21 @@ public class ProblemService {
 
     @Autowired
     private IdWorker idWorker;
+
+    public Page<Problem> newList(String labelid, int page, int rows){
+        Pageable pageable = PageRequest.of(page-1,rows);
+        return problemDao.newList(labelid, pageable);
+    }
+
+    public Page<Problem> hotList(String labelid, int page, int rows){
+        Pageable pageable = PageRequest.of(page-1,rows);
+        return problemDao.newList(labelid, pageable);
+    }
+
+    public Page<Problem> waitList(String labelid, int page, int rows){
+        Pageable pageable = PageRequest.of(page-1,rows);
+        return problemDao.newList(labelid, pageable);
+    }
 
     /**
      * 查询全部列表

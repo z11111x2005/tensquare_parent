@@ -24,6 +24,30 @@ public class ProblemController {
     @Autowired
     private ProblemService problemService;
 
+    @GetMapping("/newlist/{labelid}/{page}/{size}")
+    public Result newList(@PathVariable String labelid,
+                          @PathVariable Integer page,
+                          @PathVariable Integer size) {
+        Page<Problem> problems = problemService.newList(labelid, page, size);
+        return new Result(true, StatusCode.OK, "查询成功", new PageResult<Problem>(problems.getTotalElements(), problems.getContent()));
+    }
+
+    @GetMapping("/hotlist/{labelid}/{page}/{size}")
+    public Result hotList(@PathVariable String labelid,
+                          @PathVariable Integer page,
+                          @PathVariable Integer size) {
+        Page<Problem> problems = problemService.hotList(labelid, page, size);
+        return new Result(true, StatusCode.OK, "查询成功", new PageResult<Problem>(problems.getTotalElements(), problems.getContent()));
+    }
+
+    @GetMapping("/waitlist/{labelid}/{page}/{size}")
+    public Result waitList(@PathVariable String labelid,
+                          @PathVariable Integer page,
+                          @PathVariable Integer size) {
+        Page<Problem> problems = problemService.waitList(labelid, page, size);
+        return new Result(true, StatusCode.OK, "查询成功", new PageResult<Problem>(problems.getTotalElements(), problems.getContent()));
+    }
+
 
     /**
      * 查询全部数据
