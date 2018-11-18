@@ -1,5 +1,5 @@
 server: 
-  port: 9004
+  port: 9005
 spring: 
   application:  
     name: tensquare-article #指定服务名
@@ -11,3 +11,5 @@ spring:
   jpa: 
     database: MySQL
     show-sql: true
+  redis:
+    host: 192.168.52.128
