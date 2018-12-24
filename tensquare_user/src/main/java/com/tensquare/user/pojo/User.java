@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.util.Date;
+
 /**
  * 实体类
  * @author Administrator
@@ -94,7 +96,7 @@ public class User implements Serializable{
 	public java.util.Date getRegdate() {		
 		return regdate;
 	}
-	public void setRegdate(java.util.Date regdate) {
+	public void setRegdate(Date regdate) {
 		this.regdate = regdate;
 	}
 

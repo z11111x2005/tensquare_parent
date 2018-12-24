@@ -2,14 +2,11 @@ package com.tensquare.user.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.web.bind.annotation.*;
 
 import com.tensquare.user.pojo.User;
 import com.tensquare.user.service.UserService;
@@ -29,6 +26,36 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private RedisTemplate redisTemplate;
+
+	/**
+	 * 发送短信验证码
+	 */
+	@PostMapping("/sendsms/{mobile}")
+	public Result sendSms(@PathVariable("mobile") String mobile){
+		userService.sendSms(mobile);
+		return new Result(true, StatusCode.OK, "发送成功");
+	}
+
+	/**
+	 * 注册
+	 * @param code
+	 * @return
+	 */
+	@PostMapping("/register/{code}")
+	public Result regist(@PathVariable("code") String code,
+						 @RequestBody User user){
+		String checkcodeRedis = (String) redisTemplate.opsForValue().get("checkcode_"+ user.getMobile());
+		if(StringUtils.isEmpty(checkcodeRedis)){
+			return new Result(false, StatusCode.ERROR, "请先获取手机验证码");
+		}
+		if(!checkcodeRedis.equals(code)){
+			return new Result(false, StatusCode.ERROR, "请输入正确的验证码");
+		}
+		userService.add(user);
+		return new Result(true, StatusCode.OK, "注册成功");
+	}
 	
 	
 	/**
