@@ -4,12 +4,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.tensquare.user.pojo.Admin;
 import com.tensquare.user.service.AdminService;
@@ -29,8 +24,19 @@ public class AdminController {
 
 	@Autowired
 	private AdminService adminService;
-	
-	
+
+	@PostMapping("/login")
+	public Result login(@RequestBody Admin admin){
+		Admin adminLogin = adminService.login(admin);
+		if(null == adminLogin){
+			return new Result(false, StatusCode.LOGINERROR, "登录失败");
+		}
+		// 使得前后端可以通话的操作。采用JWT来实现
+
+		return new Result(true, StatusCode.OK, "登录成功");
+	}
+
+
 	/**
 	 * 查询全部数据
 	 * @return

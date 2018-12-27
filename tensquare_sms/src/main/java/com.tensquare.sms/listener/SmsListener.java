@@ -1,6 +1,5 @@
 package com.tensquare.sms.listener;
 
-import com.aliyuncs.exceptions.ClientException;
 import com.tensquare.sms.utils.SmsUtil;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
