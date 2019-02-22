@@ -4,7 +4,7 @@ spring:
   application:
     name: tensquare_sms
   rabbitmq:
-    host: 192.168.52.129
+    host: 129.204.200.206
 aliyun:
   sms:
     accessKeyId: "id"
