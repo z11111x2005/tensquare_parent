@@ -9,8 +9,11 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.servlet.http.HttpServletRequest;
 
+import io.jsonwebtoken.Claims;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,6 +28,7 @@ import util.IdWorker;
 
 import com.tensquare.user.dao.UserDao;
 import com.tensquare.user.pojo.User;
+import util.JwtUtil;
 
 /**
  * 服务层
@@ -41,9 +45,9 @@ public class UserService {
     @Autowired
     private RedisTemplate redisTemplate;
     @Autowired
-    private RabbitTemplate rabbitTemplate;
-    @Autowired
     private BCryptPasswordEncoder encoder;
+    @Autowired
+    private HttpServletRequest request;
 
     /**
      * 查询全部列表
@@ -119,11 +123,15 @@ public class UserService {
     }
 
     /**
-     * 删除
+     * 删除:必须有admin角色才能删除
      *
      * @param id
      */
     public void deleteById(String id) {
+        String token = (String) request.getAttribute("claims_admin");
+        if(StringUtils.isEmpty(token)){
+            throw new RuntimeException("权限不足！");
+        }
         userDao.deleteById(id);
     }
 
@@ -135,51 +143,47 @@ public class UserService {
      */
     private Specification<User> createSpecification(Map searchMap) {
 
-        return new Specification<User>() {
-
-            @Override
-            public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                List<Predicate> predicateList = new ArrayList<Predicate>();
-                // ID
-                if (searchMap.get("id") != null && !"".equals(searchMap.get("id"))) {
-                    predicateList.add(cb.like(root.get("id").as(String.class), "%" + (String) searchMap.get("id") + "%"));
-                }
-                // 手机号码
-                if (searchMap.get("mobile") != null && !"".equals(searchMap.get("mobile"))) {
-                    predicateList.add(cb.like(root.get("mobile").as(String.class), "%" + (String) searchMap.get("mobile") + "%"));
-                }
-                // 密码
-                if (searchMap.get("password") != null && !"".equals(searchMap.get("password"))) {
-                    predicateList.add(cb.like(root.get("password").as(String.class), "%" + (String) searchMap.get("password") + "%"));
-                }
-                // 昵称
-                if (searchMap.get("nickname") != null && !"".equals(searchMap.get("nickname"))) {
-                    predicateList.add(cb.like(root.get("nickname").as(String.class), "%" + (String) searchMap.get("nickname") + "%"));
-                }
-                // 性别
-                if (searchMap.get("sex") != null && !"".equals(searchMap.get("sex"))) {
-                    predicateList.add(cb.like(root.get("sex").as(String.class), "%" + (String) searchMap.get("sex") + "%"));
-                }
-                // 头像
-                if (searchMap.get("avatar") != null && !"".equals(searchMap.get("avatar"))) {
-                    predicateList.add(cb.like(root.get("avatar").as(String.class), "%" + (String) searchMap.get("avatar") + "%"));
-                }
-                // E-Mail
-                if (searchMap.get("email") != null && !"".equals(searchMap.get("email"))) {
-                    predicateList.add(cb.like(root.get("email").as(String.class), "%" + (String) searchMap.get("email") + "%"));
-                }
-                // 兴趣
-                if (searchMap.get("interest") != null && !"".equals(searchMap.get("interest"))) {
-                    predicateList.add(cb.like(root.get("interest").as(String.class), "%" + (String) searchMap.get("interest") + "%"));
-                }
-                // 个性
-                if (searchMap.get("personality") != null && !"".equals(searchMap.get("personality"))) {
-                    predicateList.add(cb.like(root.get("personality").as(String.class), "%" + (String) searchMap.get("personality") + "%"));
-                }
-
-                return cb.and(predicateList.toArray(new Predicate[predicateList.size()]));
-
+        return (root, query, cb) -> {
+            List<Predicate> predicateList = new ArrayList<Predicate>();
+            // ID
+            if (searchMap.get("id") != null && !"".equals(searchMap.get("id"))) {
+                predicateList.add(cb.like(root.get("id").as(String.class), "%" + (String) searchMap.get("id") + "%"));
             }
+            // 手机号码
+            if (searchMap.get("mobile") != null && !"".equals(searchMap.get("mobile"))) {
+                predicateList.add(cb.like(root.get("mobile").as(String.class), "%" + (String) searchMap.get("mobile") + "%"));
+            }
+            // 密码
+            if (searchMap.get("password") != null && !"".equals(searchMap.get("password"))) {
+                predicateList.add(cb.like(root.get("password").as(String.class), "%" + (String) searchMap.get("password") + "%"));
+            }
+            // 昵称
+            if (searchMap.get("nickname") != null && !"".equals(searchMap.get("nickname"))) {
+                predicateList.add(cb.like(root.get("nickname").as(String.class), "%" + (String) searchMap.get("nickname") + "%"));
+            }
+            // 性别
+            if (searchMap.get("sex") != null && !"".equals(searchMap.get("sex"))) {
+                predicateList.add(cb.like(root.get("sex").as(String.class), "%" + (String) searchMap.get("sex") + "%"));
+            }
+            // 头像
+            if (searchMap.get("avatar") != null && !"".equals(searchMap.get("avatar"))) {
+                predicateList.add(cb.like(root.get("avatar").as(String.class), "%" + (String) searchMap.get("avatar") + "%"));
+            }
+            // E-Mail
+            if (searchMap.get("email") != null && !"".equals(searchMap.get("email"))) {
+                predicateList.add(cb.like(root.get("email").as(String.class), "%" + (String) searchMap.get("email") + "%"));
+            }
+            // 兴趣
+            if (searchMap.get("interest") != null && !"".equals(searchMap.get("interest"))) {
+                predicateList.add(cb.like(root.get("interest").as(String.class), "%" + (String) searchMap.get("interest") + "%"));
+            }
+            // 个性
+            if (searchMap.get("personality") != null && !"".equals(searchMap.get("personality"))) {
+                predicateList.add(cb.like(root.get("personality").as(String.class), "%" + (String) searchMap.get("personality") + "%"));
+            }
+
+            return cb.and(predicateList.toArray(new Predicate[predicateList.size()]));
+
         };
 
     }
@@ -200,7 +204,7 @@ public class UserService {
 
     public User login(String mobile, String password) {
         User user = userDao.findByMobile(mobile);
-        if(null != user&&encoder.matches(password, user.getPassword())){
+        if (null != user && encoder.matches(password, user.getPassword())) {
             return user;
         }
         return null;

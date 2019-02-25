@@ -15,3 +15,7 @@ spring:
     host: 129.204.200.206
   rabbitmq:
     host: 129.204.200.206
+jwt:
+  config:
+    key: itecast
+    ttl: 3600000
