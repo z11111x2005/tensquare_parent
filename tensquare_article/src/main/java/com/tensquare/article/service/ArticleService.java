@@ -99,7 +99,7 @@ public class ArticleService {
         // 先从缓存中查询当前对象
         Article article = (Article) redisTemplate.opsForValue().get("article_" + id);
         // 如果没有取到
-        if(null == article){
+        if (null == article) {
             article = articleDao.findById(id).get();
             // 存到缓存中
             redisTemplate.opsForValue().set("article_" + id, article);

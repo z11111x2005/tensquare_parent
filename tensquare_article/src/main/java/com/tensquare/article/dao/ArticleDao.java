@@ -9,10 +9,10 @@ import org.springframework.data.jpa.repository.Query;
 
 /**
  * 数据访问接口
- * @author Administrator
  *
+ * @author Administrator
  */
-public interface ArticleDao extends JpaRepository<Article,String>,JpaSpecificationExecutor<Article>{
+public interface ArticleDao extends JpaRepository<Article, String>, JpaSpecificationExecutor<Article> {
 
     @Modifying
     @Query(value = "update tb_article set state=1 where id = ?", nativeQuery = true)
