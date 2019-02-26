@@ -11,3 +11,10 @@ aliyun:
     accessKeySecret: "秘钥"
     template_code: "模板名称"
     sign_name: "签名"
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:6868/eureka/
+  # 模块跨域访问
+  instance:
+    prefer-ip-address: true

@@ -9,3 +9,10 @@ spring:
       database: spitdb
   redis:
     host: 129.204.200.206
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:6868/eureka/
+  # 模块跨域访问
+  instance:
+    prefer-ip-address: true

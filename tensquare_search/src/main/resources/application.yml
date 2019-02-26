@@ -6,3 +6,10 @@ spring:
   data:
     elasticsearch:
       cluster-nodes: 129.204.200.206:9300
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:6868/eureka/
+  # 模块跨域访问
+  instance:
+    prefer-ip-address: true

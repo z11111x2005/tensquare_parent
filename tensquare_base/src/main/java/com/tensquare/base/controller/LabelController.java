@@ -25,7 +25,7 @@ public class LabelController {
     }
 
     @GetMapping("/{labelId}")
-    public Result findById(@PathVariable String labelId){
+    public Result findById(@PathVariable("labelId") String labelId){
         return new Result(true, StatusCode.OK, "查询成功", labelService.findById(labelId));
     }
 
@@ -56,7 +56,7 @@ public class LabelController {
     }
 
     @PostMapping("/search/{page}/{size}")
-    public Result pageQuery(@PathVariable int page, @PathVariable int size, @RequestBody Label label){
+    public Result pageQuery(@PathVariable("page") int page, @PathVariable("size") int size, @RequestBody Label label){
         Page<Label> pageDate = labelService.pageQuery(label, size, page);
         return new Result(true, StatusCode.OK, "查询成功", new PageResult<Label>(pageDate.getTotalElements(), pageDate.getContent()));
     }
