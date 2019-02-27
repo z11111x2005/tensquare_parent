@@ -1,5 +1,6 @@
 package com.tensquare.friend.controller;
 
+import com.tensquare.friend.client.UserClient;
 import com.tensquare.friend.dao.UnFriendDao;
 import com.tensquare.friend.service.FriendService;
 import entity.Result;
@@ -22,6 +23,8 @@ public class FriendController {
     private HttpServletRequest request;
     @Autowired
     private FriendService friendService;
+    @Autowired
+    private UserClient userClient;
 
     /**
      * 添加好友或者添加非好友
@@ -48,6 +51,7 @@ public class FriendController {
                 if (flag == 0) {
                     return new Result(false, StatusCode.ERROR, "不能重复添加好友");
                 } else if (flag == 1) {
+                    userClient.updateFanscountAndFollowcount(userid, friendid, 1);
                     return new Result(true, StatusCode.OK, "添加成功");
                 }
             } else if (type.equals("2")) {
