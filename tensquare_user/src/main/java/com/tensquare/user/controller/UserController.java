@@ -158,4 +158,16 @@ public class UserController {
         return new Result(true, StatusCode.OK, "删除成功");
     }
 
+    /**
+     * 更新粉丝和关注数
+     * @param userid
+     * @param friendid
+     * @param operation
+     */
+    @PutMapping("/{userid}/{friendid}/{operation}")
+    public void updateFanscountAndFollowcount(@PathVariable("userid") String userid,
+                                              @PathVariable("friendid") String friendid,
+                                              @PathVariable("operation") Integer operation){
+        userService.updateFanscountAndFollowcount(operation, userid, friendid);
+    }
 }

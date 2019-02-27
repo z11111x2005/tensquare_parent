@@ -13,7 +13,8 @@ spring:
     show-sql: true
 jwt:
   config:
-    key: itcast
+    key: itecast
+    ttl: 3600000
 eureka:
   client:
     service-url:

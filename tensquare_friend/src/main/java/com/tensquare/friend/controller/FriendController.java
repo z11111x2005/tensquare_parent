@@ -1,5 +1,6 @@
 package com.tensquare.friend.controller;
 
+import com.tensquare.friend.dao.UnFriendDao;
 import com.tensquare.friend.service.FriendService;
 import entity.Result;
 import entity.StatusCode;
@@ -24,37 +25,43 @@ public class FriendController {
 
     /**
      * 添加好友或者添加非好友
+     *
      * @param friendid
      * @param type
      * @return
      */
     @GetMapping("/like/{friendid}/{type}")
     public Result addFriend(@PathVariable("friendid") String friendid,
-                            @PathVariable("type") String type){
+                            @PathVariable("type") String type) {
         // 1.验证是否登录,并且拿到当前登录的用户id
         Claims claims = (Claims) request.getAttribute("claims_user");
-        if(null == claims){
+        if (null == claims) {
             return new Result(false, StatusCode.LOGINERROR, "权限不足");
         }
         // 得到用户id
         String userid = claims.getId();
         // 2.判断是添加好友还是添加非好友
-        if(StringUtils.isEmpty(type)){
-            if(type.equals("1")){
+        if (StringUtils.isNotEmpty(type)) {
+            if (type.equals("1")) {
                 // 添加好友
                 int flag = friendService.addFriend(userid, friendid);
-                if(flag==0){
+                if (flag == 0) {
                     return new Result(false, StatusCode.ERROR, "不能重复添加好友");
-                } else if(flag ==1){
+                } else if (flag == 1) {
                     return new Result(true, StatusCode.OK, "添加成功");
                 }
-            } else if(type.equals("2")){
+            } else if (type.equals("2")) {
                 // 添加非好友
+                int flag = friendService.addUnFriend(userid, friendid);
+                if (0 == flag) {
+                    return new Result(false, StatusCode.ERROR, "不能重复添加非好友");
+                } else if (flag == 1) {
+                    return new Result(true, StatusCode.OK, "添加成功");
+                }
             }
             return new Result(false, StatusCode.ERROR, "参数异常");
         } else {
             return new Result(false, StatusCode.ERROR, "参数异常");
         }
-        return new Result();
     }
 }
