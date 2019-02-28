@@ -50,4 +50,16 @@ public class FriendService {
         unFriendDao.save(unFriend);
         return 1;
     }
+
+    public void deleteFriend(String userid, String friendid) {
+        // 删除表中userid和friendid这条数据
+        friendDao.deleteFriend(userid, friendid);
+        // 更新friendid到userid的islike为0
+        friendDao.updateIslike("0", friendid, userid);
+        // 非好友表中添加数据
+        UnFriend unFriend = new UnFriend();
+        unFriend.setUserid(userid);
+        unFriend.setFriendid(friendid);
+        unFriendDao.save(unFriend);
+    }
 }

@@ -1,17 +1,13 @@
 package com.tensquare.friend.controller;
 
 import com.tensquare.friend.client.UserClient;
-import com.tensquare.friend.dao.UnFriendDao;
 import com.tensquare.friend.service.FriendService;
 import entity.Result;
 import entity.StatusCode;
 import io.jsonwebtoken.Claims;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -67,5 +63,19 @@ public class FriendController {
         } else {
             return new Result(false, StatusCode.ERROR, "参数异常");
         }
+    }
+
+    @DeleteMapping("/{friendid}")
+    public Result deleteFriend(@PathVariable("friendid") String friendid){
+        // 1.验证是否登录,并且拿到当前登录的用户id
+        Claims claims = (Claims) request.getAttribute("claims_user");
+        if (null == claims) {
+            return new Result(false, StatusCode.LOGINERROR, "权限不足");
+        }
+        // 得到用户id
+        String userid = claims.getId();
+        friendService.deleteFriend(userid, friendid);
+        userClient.updateFanscountAndFollowcount(userid, friendid, -1);
+        return new Result(true, StatusCode.OK, "删除成功");
     }
 }
