@@ -1,3 +1,5 @@
+server:
+  port: 12000
 spring:
   application:
     name: tensquare-config
@@ -6,5 +8,10 @@ spring:
       server:
         git:
           uri: https://gitee.com/liuympoj/tensquare_dev.git
-server:
-  port: 12000
+  rabbitmq:
+    host: 129.204.200.206
+management:
+  endpoints:
+    web:
+      exposure:
+        include: bus-refresh
